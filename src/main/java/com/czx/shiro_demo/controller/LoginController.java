@@ -29,6 +29,7 @@ public class LoginController {
 
     /**
      * 用户登录
+     * 单点登录---用户登录会重置允许访问的token值
      * @param userEntity
      * @return
      */

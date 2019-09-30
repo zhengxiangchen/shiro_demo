@@ -66,7 +66,8 @@ public class TokenInterceptor implements HandlerInterceptor {
             long expireTime = redisUtils.getExpire(token);
             //如果小于60秒则重新设置过期时间
             if(expireTime <= 60){
-                String username = (String)redisUtils.get(token);redisUtils.expire(username, 60 * 30);
+                String username = (String)redisUtils.get(token);
+                redisUtils.expire(username, 60 * 30);
                 redisUtils.expire(token, 60 * 30);
 
             }
