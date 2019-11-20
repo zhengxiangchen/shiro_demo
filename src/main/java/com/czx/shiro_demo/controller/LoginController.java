@@ -65,12 +65,12 @@ public class LoginController {
 
             JSONObject result_obj = new JSONObject();
             result_obj.put("token", jwt_token);
-            return ResponseFormat.buildResponseMap("200", result_obj);
+            return ResponseFormat.buildResponseJson("200", result_obj);
         }catch (Exception e){
             log.info("[{}]-登录失败------->{}",userEntity.getUsername(), e.getMessage());
         }
 
-        return ResponseFormat.buildResponseMap("400", new JSONObject());
+        return ResponseFormat.buildResponseJson("400", new JSONObject());
     }
 
 
@@ -90,7 +90,7 @@ public class LoginController {
             log.info("redis缓存已清理完成");
         }
         subject.logout();
-        return ResponseFormat.buildResponseMap("200", new JSONObject());
+        return ResponseFormat.buildResponseJson("200", new JSONObject());
     }
 
 
@@ -101,13 +101,11 @@ public class LoginController {
     @GetMapping("getCurrentUser")
     public JSONObject getCurrentUser(HttpServletRequest request){
         String username = (String)request.getAttribute("username");
-        log.info("username1111111111 = {}", username);
-
 
         JSONObject resultObj = new JSONObject();
         UserEntity userEntity = ShiroUtils.getCurrentUser();
         resultObj.put("user", JSONObject.toJSONString(userEntity));
-        return ResponseFormat.buildResponseMap("200", resultObj);
+        return ResponseFormat.buildResponseJson("200", resultObj);
     }
 
 
@@ -117,6 +115,6 @@ public class LoginController {
      */
     @GetMapping("unAuthor")
     public JSONObject unAuthor(){
-        return ResponseFormat.buildResponseMap("300", new JSONObject());
+        return ResponseFormat.buildResponseJson("300", new JSONObject());
     }
 }

@@ -22,7 +22,7 @@ public class GlobalExceptionResolver{
     @ResponseBody
     @ExceptionHandler(UnauthorizedException.class)
     public JSONObject unauthorizedExceptionHandler() {
-        return ResponseFormat.buildResponseMap("700", new JSONObject());
+        return ResponseFormat.buildResponseJson("700", new JSONObject());
     }
 
 

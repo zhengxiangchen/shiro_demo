@@ -28,7 +28,7 @@ public class ResponseFormat {
 
 	}
 	
-	public static JSONObject buildResponseMap(String status, JSONObject response) {
+	public static JSONObject buildResponseJson(String status, JSONObject response) {
 		response.put("code", status);
 		response.put("msg", messageMap.get(status));
 		log.info("接口请求返回---------->[{}]", response);

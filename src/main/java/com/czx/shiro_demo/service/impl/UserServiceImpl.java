@@ -33,7 +33,7 @@ public class UserServiceImpl implements IUserService {
         String username = userEntity.getUsername();
         UserEntity checkUsernameEntity = userRepository.findByUsername(username);
         if(checkUsernameEntity != null){
-            return ResponseFormat.buildResponseMap("10001", new JSONObject());
+            return ResponseFormat.buildResponseJson("10001", new JSONObject());
         }
         String salt = IdUtil.objectId();
         userEntity.setSalt(salt);
@@ -43,6 +43,6 @@ public class UserServiceImpl implements IUserService {
         userRepository.save(userEntity);
 
         log.info("新增成功--->{}", JSONObject.toJSONString(userEntity));
-        return ResponseFormat.buildResponseMap("200", new JSONObject());
+        return ResponseFormat.buildResponseJson("200", new JSONObject());
     }
 }

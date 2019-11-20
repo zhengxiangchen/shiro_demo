@@ -31,16 +31,16 @@ public class RoleServiceImpl implements IRoleService {
         String name = roleEntity.getName();
         if(name == null || name.trim().length() <= 0){
             log.info("新增角色参数错误------>[{}]", JSONObject.toJSONString(roleEntity));
-            return ResponseFormat.buildResponseMap("600", new JSONObject());
+            return ResponseFormat.buildResponseJson("600", new JSONObject());
         }
 
         RoleEntity role = roleRepository.findByName(name);
 
         if(role != null){
-            return ResponseFormat.buildResponseMap("30001", new JSONObject());
+            return ResponseFormat.buildResponseJson("30001", new JSONObject());
         }
 
         roleRepository.save(roleEntity);
-        return ResponseFormat.buildResponseMap("200", new JSONObject());
+        return ResponseFormat.buildResponseJson("200", new JSONObject());
     }
 }
