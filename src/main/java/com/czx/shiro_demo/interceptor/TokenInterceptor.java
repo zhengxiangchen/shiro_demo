@@ -2,7 +2,9 @@ package com.czx.shiro_demo.interceptor;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.czx.shiro_demo.utils.JWTUtils;
 import com.czx.shiro_demo.utils.RedisUtils;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,8 +30,6 @@ public class TokenInterceptor implements HandlerInterceptor {
     @Autowired
     private RedisUtils redisUtils;
 
-
-
     private static List<String> IGNORE_URI_LIST = new ArrayList<>();
     static {
         IGNORE_URI_LIST.add("/login");
@@ -49,8 +49,8 @@ public class TokenInterceptor implements HandlerInterceptor {
             log.info("拦截器----->[{}]直接放行", url);
             return true;
         }
-        String token = request.getHeader("token");
-        if(token == null || token.length() <= 0){
+        String jwt_token = request.getHeader("token");
+        if(jwt_token == null || jwt_token.length() <= 0){
             log.info("请求中无token值--------------->直接拦截");
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("code", "401");
@@ -59,18 +59,29 @@ public class TokenInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        boolean hasToken = redisUtils.hasKey(token);
+        boolean hasToken = redisUtils.hasKey(jwt_token);
         if(hasToken){
-            log.info("token验证成功------->拦截器放行");
+            Claims claims = JWTUtils.parseJWT(jwt_token);
+            if(claims == null){
+                log.info("token验证失败 <====== token已失效,重新登录!");
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("code", "401");
+                jsonObject.put("msg", "token验证失败");
+                returnJson(response, JSONObject.toJSONString(jsonObject));
+                return false;
+            }
+            log.info("token拦截器验证成功 ======> 拦截器放行");
             //获取key值的过期时间
-            long expireTime = redisUtils.getExpire(token);
+            long expireTime = redisUtils.getExpire(jwt_token);
             //如果小于60秒则重新设置过期时间
             if(expireTime <= 60){
-                String username = (String)redisUtils.get(token);
+                String username = (String)redisUtils.get(jwt_token);
                 redisUtils.expire(username, 60 * 30);
-                redisUtils.expire(token, 60 * 30);
-
+                redisUtils.expire(jwt_token, 60 * 30);
             }
+
+            request.setAttribute("username", claims.get("username"));
+            request.setAttribute("password", claims.get("password"));
             return true;
         }else{
             log.info("token验证失败------->登录状态已失效,重新登录!");
